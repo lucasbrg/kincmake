@@ -149,6 +149,11 @@ let options = [
         full: 'onlyshaders',
         value: false,
         description: 'Compile only shaders'
+    },
+    {
+        full: 'export_compile_commands',
+        value: false,
+        description: 'Export compile_commands.json for use with Language Server Providers'
     }
 ];
 let parsedOptions = {};

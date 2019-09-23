@@ -292,6 +292,9 @@ async function exportKoremakeProject(from, to, platform, korefile, options) {
         throw 'No exporter found for platform ' + platform + '.';
     }
     await exporter.exportSolution(project, from, to, platform, options.vrApi, options);
+    if (options.export_compile_commands) {
+        exporter.exportCompileCommands(project, from, to, platform, options.vrApi, options);
+    }
     return project;
 }
 function isKoremakeProject(directory, korefile) {

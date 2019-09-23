@@ -1,6 +1,8 @@
 import {Project} from '../Project';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { Compiler } from '../Compiler';
+import * as log from '../log';
 
 export abstract class Exporter {
 	out: number;
@@ -104,5 +106,34 @@ export abstract class Exporter {
 		this.p('target_link_libraries(' + name + '\n' + libraries + ')');
 
 		this.closeFile();
+	}
+
+	exportCompileCommands(project: Project, from: string, to: string, platform: string, vrApi: any, options: any) {
+		let name = project.getSafeName();
+		const outputPath = path.resolve(to, options.buildPath);
+		const cCompiler = options.compiler === Compiler.Clang ? 'clang' : 'gcc';
+		const cppCompiler = options.compiler === Compiler.Clang ? 'clang++' : 'g++';
+		let incline = '-I./ '; // local directory to pick up the precompiled header hxcpp.h.gch
+		for (let inc of project.getIncludeDirs()) {
+			inc = path.relative(outputPath, path.resolve(from, inc));
+			incline += '-I' + inc + ' ';
+		}
+		let entries = [];
+		for (let fileobject of project.getFiles()) {
+			let file = path.resolve(fileobject.file);
+			if (file.endsWith('.cpp') || file.endsWith('.c') || file.endsWith('.cc') || file.endsWith('.m') || file.endsWith('.mm')) {
+				let compiler = cppCompiler;
+				if (file.endsWith('.c') || file.endsWith('m')) {
+					compiler = cCompiler;
+				}
+				let entry: any = {};
+				entry['directory'] = outputPath;
+				entry['file'] = file;
+				entry['command'] = compiler + ' ' + incline + ' -o ' + file + '.o -c ' + file;
+				entries.push(entry);
+			}
+		}
+		let json = JSON.stringify(entries);
+		fs.writeFileSync(path.resolve(to, name, 'compile_commands.json'), json, 'utf8');
 	}
 }

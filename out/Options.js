@@ -18,6 +18,7 @@ exports.Options = {
     compiler: Compiler_1.Compiler.Default,
     visualStudioVersion: VisualStudioVersion_1.VisualStudioVersion.VS2019,
     compile: false,
-    run: false
+    run: false,
+    exportCompileCommands: false
 };
 //# sourceMappingURL=Options.js.map

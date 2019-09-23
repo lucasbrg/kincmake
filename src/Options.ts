@@ -17,5 +17,6 @@ export let Options = {
 	compiler: Compiler.Default,
 	visualStudioVersion: VisualStudioVersion.VS2019,
 	compile: false,
-	run: false
+	run: false,
+	exportCompileCommands: false
 };
